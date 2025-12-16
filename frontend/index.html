@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshChain - Food Traceability</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>🌿 FreshChain</h1>
+                <p>Farm to Fork Traceability</p>
+            </div>
+
+            <div id="wallet-section">
+                <button id="connectBtn" class="btn">🔗 Connect Wallet</button>
+                <div id="account-info" style="display: none;">
+                    <p class="account-label">Connected:</p>
+                    <p class="account-address"><span id="account"></span></p>
+                    <button id="disconnectBtn" class="btn-disconnect">Disconnect</button>
+                </div>
+            </div>
+
+            <div id="role-selector" style="display: none;">
+                <div class="role-buttons">
+                    <button class="role-btn" data-role="admin">
+                        <span class="role-icon">👤</span>
+                        <span>Admin</span>
+                    </button>
+                    <button class="role-btn" data-role="producer">
+                        <span class="role-icon">🌾</span>
+                        <span>Producer</span>
+                    </button>
+                    <button class="role-btn" data-role="transporter">
+                        <span class="role-icon">🚚</span>
+                        <span>Transporter</span>
+                    </button>
+                    <button class="role-btn" data-role="distributor">
+                        <span class="role-icon">🏭</span>
+                        <span>Distributor</span>
+                    </button>
+                    <button class="role-btn" data-role="retailer">
+                        <span class="role-icon">🏪</span>
+                        <span>Retailer</span>
+                    </button>
+                    <button class="role-btn" data-role="customer">
+                        <span class="role-icon">🛒</span>
+                        <span>Customer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="welcome-screen">
+                <h2>Welcome to FreshChain 🌱</h2>
+                <p>Please connect your wallet and select a user type to get started.</p>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="admin-panel" class="panel" style="display: none;">
+            <h2>Admin Dashboard</h2>
+            
+            <div class="panel-grid">
+                <div class="form-section">
+                    <h3>Register Producer</h3>
+                    <input type="text" id="producerAddress" placeholder="0x...">
+                    <button onclick="registerProducer()" class="btn">Register</button>
+                </div>
+                <div class="form-section">
+                    <h3>Register Transporter</h3>
+                    <input type="text" id="transporterAddress" placeholder="0x...">
+                    <button onclick="registerTransporter()" class="btn">Register</button>
+                </div>
+                <div class="form-section">
+                    <h3>Register Distributor</h3>
+                    <input type="text" id="adminDistributorAddress" placeholder="0x...">
+                    <button onclick="registerDistributor()" class="btn">Register</button>
+                </div>
+                <div class="form-section">
+                    <h3>Register Retailer</h3>
+                    <input type="text" id="retailerAddress" placeholder="0x...">
+                    <button onclick="registerRetailer()" class="btn">Register</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Producer Dashboard -->
+        <div id="producer-panel" class="panel" style="display: none;">
+            <h2>Producer Dashboard</h2>
+            
+            <div class="form-section" style="margin-bottom: 15px;">
+                <h3>My Batches</h3>
+                <button onclick="loadMyBatches('producer')" class="btn-secondary">Refresh Batches</button>
+                <div id="producer-batches" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="panel-grid">
+                <div class="form-section">
+                    <h3>Create Batch</h3>
+                    <input type="text" id="productName" placeholder="Product Name (e.g., Tomatoes)">
+                    <input type="number" id="quantity" placeholder="Quantity (kg)">
+                    <button onclick="createBatch()" class="btn">Create Batch</button>
+                </div>
+                <div class="form-section">
+                    <h3>Transfer Ownership</h3>
+                    <input type="number" id="transferBatchId" placeholder="Batch ID">
+                    <input type="text" id="newOwner" placeholder="New Owner Address (0x...)">
+                    <button onclick="transferOwnership()" class="btn">Transfer</button>
+                </div>
+            </div>
+            <div id="qr-section" style="display: none;">
+                <h3>QR Code</h3>
+                <canvas id="qrcode"></canvas>
+            </div>
+        </div>
+
+        <!-- Transporter Dashboard -->
+        <div id="transporter-panel" class="panel" style="display: none;">
+            <h2>Transporter Dashboard</h2>
+            
+            <div class="form-section" style="margin-bottom: 15px;">
+                <h3>My Batches</h3>
+                <button onclick="loadMyBatches('transporter')" class="btn-secondary">Refresh Batches</button>
+                <div id="transporter-batches" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="panel-grid">
+                <div class="form-section">
+                    <h3>Add Sensor Data</h3>
+                    <input type="number" id="sensorBatchId" placeholder="Batch ID">
+                    <input type="number" id="temperature" placeholder="Temperature (-10 to 40°C)">
+                    <input type="number" id="humidity" placeholder="Humidity (0 to 40%)">
+                    <input type="text" id="location" placeholder="Location (e.g., Bursa)">
+                    <button onclick="addSensorData()" class="btn">Add Data</button>
+                </div>
+                <div class="form-section">
+                    <h3>Transfer to Distributor</h3>
+                    <input type="number" id="transporterTransferBatchId" placeholder="Batch ID">
+                    <input type="text" id="transporterDistributorAddress" placeholder="Distributor Address">
+                    <button onclick="transporterTransfer()" class="btn">Transfer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distributor Dashboard -->
+        <div id="distributor-panel" class="panel" style="display: none;">
+            <h2>Distributor Dashboard</h2>
+            
+            <div class="form-section" style="margin-bottom: 15px;">
+                <h3>My Batches</h3>
+                <button onclick="loadMyBatches('distributor')" class="btn-secondary">Refresh Batches</button>
+                <div id="distributor-batches" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="panel-grid">
+                <div class="form-section">
+                    <h3>Transfer to Retailer</h3>
+                    <input type="number" id="distTransferBatchId" placeholder="Batch ID">
+                    <input type="text" id="retailerTransferAddress" placeholder="Retailer Address">
+                    <button onclick="distributorTransfer()" class="btn">Transfer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Retailer Dashboard -->
+        <div id="retailer-panel" class="panel" style="display: none;">
+            <h2>Retailer Dashboard</h2>
+            
+            <div class="form-section" style="margin-bottom: 15px;">
+                <h3>My Batches</h3>
+                <button onclick="loadMyBatches('retailer')" class="btn-secondary">Refresh Batches</button>
+                <div id="retailer-batches" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="panel-grid">
+                <div class="form-section">
+                    <h3>Mark Batch as Arrived</h3>
+                    <input type="number" id="arrivedBatchId" placeholder="Batch ID">
+                    <select id="inspectionResult">
+                        <option value="true">Passed ✓</option>
+                        <option value="false">Failed ✗</option>
+                    </select>
+                    <button onclick="markAsArrived()" class="btn">Mark as Arrived</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer View -->
+        <div id="customer-panel" class="panel" style="display: none;">
+            <h2>🛒 Customer Verification</h2>
+            
+            <div style="display: grid; grid-template-columns: 350px 1fr; gap: 20px; align-items: start;">
+                <!-- Left: Search Section -->
+                <div>
+                    <div class="form-section center-content">
+                        <p style="margin-bottom: 15px;">Scan the QR code on the product or enter the Batch ID manually.</p>
+                        
+                        <div style="text-align:center; margin: 15px 0;">
+                            <span style="font-size: 40px;">📷</span>
+                        </div>
+
+                        <div class="search-box">
+                            <input type="number" id="viewBatchId" placeholder="Enter Batch ID (e.g., 1)" style="margin-bottom: 10px;">
+                            <button onclick="viewBatchHistory()" class="btn">🔍 Trace Product</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Results Section -->
+                <div id="batch-history" style="display: none;">
+                    <!-- Status Header Card -->
+                    <div class="tracking-header" id="tracking-header" style="padding: 15px; margin-bottom: 12px;">
+                        <div class="tracking-status" id="tracking-status" style="font-size: 1.3em; margin-bottom: 6px;"></div>
+                        <div class="tracking-meta" id="tracking-meta" style="font-size: 0.9em;"></div>
+                    </div>
+                    
+                    <!-- Product Details Card -->
+                    <div class="tracking-card" style="padding: 12px; margin-bottom: 12px;">
+                        <h3 style="font-size: 1em; margin-bottom: 10px;">Product Details</h3>
+                        <div class="product-details" id="batch-info" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; font-size: 0.85em;"></div>
+                    </div>
+                    
+                    <!-- Timeline -->
+                    <div class="tracking-card" style="padding: 12px;">
+                        <h3 style="font-size: 1em; margin-bottom: 10px;">Tracking History</h3>
+                        <div class="timeline" id="tracking-timeline"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
