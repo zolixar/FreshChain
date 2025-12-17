@@ -1,4 +1,3 @@
-// UPDATE THIS WITH YOUR DEPLOYED CONTRACT ADDRESS
 const CONTRACT_ADDRESS = "0xB764Bf6C253f94009a10e1bC9FFC728e24653A5E";
 
 const CONTRACT_ABI =[
@@ -504,7 +503,6 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
             document.getElementById('account-info').style.display = 'block';
             document.getElementById('role-selector').style.display = 'block';
 
-            // Check user roles and enable appropriate buttons
             await checkUserRolesAndEnableButtons();
 
             showMessage('Connected successfully! 🎉', 'success');
@@ -516,17 +514,14 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
     }
 });
 
-// Check user roles and enable only their role buttons + customer
 async function checkUserRolesAndEnableButtons() {
     try {
-        // Check all roles
         const isOwner = (await contract.owner()).toLowerCase() === userAccount.toLowerCase();
         const isProducer = await contract.isProducer(userAccount);
         const isTransporter = await contract.isTransporter(userAccount);
         const isDistributor = await contract.isDistributor(userAccount);
         const isRetailer = await contract.isRetailer(userAccount);
         
-        // Get all role buttons
         const roleButtons = {
             admin: document.querySelector('.role-btn[data-role="admin"]'),
             producer: document.querySelector('.role-btn[data-role="producer"]'),
@@ -536,19 +531,16 @@ async function checkUserRolesAndEnableButtons() {
             customer: document.querySelector('.role-btn[data-role="customer"]')
         };
         
-        // Disable all buttons first
         Object.values(roleButtons).forEach(btn => {
             btn.style.opacity = '0.4';
             btn.style.cursor = 'not-allowed';
             btn.style.pointerEvents = 'none';
         });
         
-        // Enable customer button (always available)
         roleButtons.customer.style.opacity = '1';
         roleButtons.customer.style.cursor = 'pointer';
         roleButtons.customer.style.pointerEvents = 'auto';
         
-        // Enable buttons based on user roles
         if (isOwner) {
             roleButtons.admin.style.opacity = '1';
             roleButtons.admin.style.cursor = 'pointer';
@@ -584,7 +576,6 @@ async function checkUserRolesAndEnableButtons() {
     }
 }
 
-// Disconnect
 document.getElementById('disconnectBtn').addEventListener('click', () => {
     provider = null;
     signer = null;
@@ -596,16 +587,13 @@ document.getElementById('disconnectBtn').addEventListener('click', () => {
     document.getElementById('role-selector').style.display = 'none';
     hideAllPanels();
     
-    // Show welcome screen again
     document.querySelector('.welcome-screen').style.display = 'block';
     
-    // Remove active state from role buttons
     document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
     
     showMessage('Disconnected successfully', 'success');
 });
 
-// Role selection
 document.querySelectorAll('.role-btn').forEach(btn => {
     btn.addEventListener('click', async function() {
         document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
@@ -625,14 +613,12 @@ function hideAllPanels() {
 }
 
 function showMessage(msg, type) {
-    // Create a custom styled notification popup
     const isSuccess = type === 'success';
     const icon = isSuccess ? '✅' : '❌';
     const bgColor = isSuccess ? '#d4edda' : '#f8d7da';
     const textColor = isSuccess ? '#155724' : '#721c24';
     const borderColor = isSuccess ? '#4a7c2f' : '#dc3545';
     
-    // Create notification element
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
@@ -652,7 +638,6 @@ function showMessage(msg, type) {
     `;
     notification.innerHTML = `<strong>${icon}</strong> ${msg}`;
     
-    // Add animation
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
@@ -680,7 +665,6 @@ function showMessage(msg, type) {
     
     document.body.appendChild(notification);
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease-in';
         setTimeout(() => {
@@ -689,7 +673,6 @@ function showMessage(msg, type) {
     }, 5000);
 }
 
-// Admin Functions
 async function registerProducer() {
     const address = document.getElementById('producerAddress').value;
     try {
@@ -758,7 +741,6 @@ async function registerRetailer() {
     }
 }
 
-// Producer Functions
 async function createBatch() {
     const productName = document.getElementById('productName').value;
     const quantity = document.getElementById('quantity').value;
@@ -800,7 +782,6 @@ async function transferOwnership() {
     const newOwner = document.getElementById('newOwner').value;
     
     try {
-        // Validate that the recipient is a transporter
         const isTransporter = await contract.isTransporter(newOwner);
         if (!isTransporter) {
             showMessage('Error: Recipient must be a registered Transporter! 🚚', 'error');
@@ -855,7 +836,6 @@ function generateQRCode(batchId) {
     document.getElementById('qr-section').style.display = 'block';
 }
 
-// Transporter Functions
 async function addSensorData() {
     const batchId = document.getElementById('sensorBatchId').value;
     const temperature = document.getElementById('temperature').value;
@@ -886,7 +866,6 @@ async function transporterTransfer() {
     const newOwner = document.getElementById('transporterDistributorAddress').value;
     
     try {
-        // Validate that the recipient is a distributor
         const isDistributor = await contract.isDistributor(newOwner);
         if (!isDistributor) {
             showMessage('Error: Recipient must be a registered Distributor! 🏭', 'error');
@@ -904,13 +883,11 @@ async function transporterTransfer() {
     }
 }
 
-// Distributor Functions
 async function distributorTransfer() {
     const batchId = document.getElementById('distTransferBatchId').value;
     const newOwner = document.getElementById('retailerTransferAddress').value;
     
     try {
-        // Validate that the recipient is a retailer
         const isRetailer = await contract.isRetailer(newOwner);
         if (!isRetailer) {
             showMessage('Error: Recipient must be a registered Retailer! 🏪', 'error');
@@ -928,7 +905,6 @@ async function distributorTransfer() {
     }
 }
 
-// Retailer Functions
 async function markAsArrived() {
     const batchId = document.getElementById('arrivedBatchId').value;
     const passedInspection = document.getElementById('inspectionResult').value === 'true';
@@ -944,7 +920,6 @@ async function markAsArrived() {
     }
 }
 
-// Customer Functions
 async function viewBatchHistory() {
     const batchId = document.getElementById('viewBatchId').value;
     
