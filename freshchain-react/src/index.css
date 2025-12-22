@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: hsl(60 56% 91%);
+  --color-foreground: hsl(142 47% 15%);
+  
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(142 47% 15%);
+  
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(142 47% 15%);
+  
+  --color-primary: hsl(142 47% 34%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  
+  --color-secondary: hsl(45 100% 51%);
+  --color-secondary-foreground: hsl(142 47% 15%);
+  
+  --color-muted: hsl(78 43% 86%);
+  --color-muted-foreground: hsl(142 20% 35%);
+  
+  --color-accent: hsl(28 52% 62%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  
+  --color-border: hsl(142 20% 85%);
+  --color-input: hsl(142 20% 85%);
+  --color-ring: hsl(142 47% 34%);
+  
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+}
+
+@layer base {
+  :root {
+    --background: 60 56% 91%; /* #fefae0 - Cornsilk (Warmer Farm White) */
+    --foreground: 142 47% 15%; /* Dark Green Text */
+    --card: 0 0% 100%;
+    --card-foreground: 142 47% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 142 47% 15%;
+    --primary: 142 47% 34%; /* #2d6a4f - Deep Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 100% 51%; /* #ffb703 - Honey Yellow */
+    --secondary-foreground: 142 47% 15%; /* Dark text on yellow for better contrast */
+    --muted: 78 43% 86%; /* #e9edc9 - Sage/Pale Green */
+    --muted-foreground: 142 20% 35%;
+    --accent: 28 52% 62%; /* #dda15e - Earth/Soil */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 142 20% 85%;
+    --input: 142 20% 85%;
+    --ring: 142 47% 34%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 140 30% 10%; /* Dark Greenish Black */
+    --foreground: 60 30% 96%; /* Off-white text */
+    --card: 140 25% 12%;
+    --card-foreground: 60 30% 96%;
+    --popover: 140 25% 12%;
+    --popover-foreground: 60 30% 96%;
+    --primary: 142 47% 45%; /* Lighter Green for Dark Mode */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 93% 47%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 140 20% 20%;
+    --muted-foreground: 140 10% 70%;
+    --accent: 28 52% 62%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 120 20% 97%;
+    --border: 140 20% 20%;
+    --input: 140 20% 20%;
+    --ring: 142 47% 45%;
+  }
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100vh;
+  }
+  
+  /* Enforce pointer cursor on all buttons and interactive elements */
+  button, [role="button"], a, input[type="submit"], input[type="button"] {
+    cursor: pointer;
+  }
+}

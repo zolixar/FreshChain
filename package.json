@@ -1,0 +1,16 @@
+{
+  "name": "freshchain",
+  "version": "1.0.0",
+  "description": "Food Traceability Blockchain DApp",
+  "private": true,
+  "scripts": {
+    "dev": "cd freshchain-react && npm run dev",
+    "build": "cd freshchain-react && npm run build",
+    "preview": "cd freshchain-react && npm run preview",
+    "lint": "cd freshchain-react && npm run lint",
+    "install:all": "cd freshchain-react && npm install"
+  },
+  "keywords": ["blockchain", "food-traceability", "ethereum", "react"],
+  "author": "",
+  "license": "MIT"
+}

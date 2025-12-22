@@ -1,0 +1,30 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Old vanilla JS app (migrated to freshchain-react/)
+app.js
+index.html
+customer.html
+style.css
+404.html
+
+# Dependencies (in case someone runs npm install in root)
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.production
