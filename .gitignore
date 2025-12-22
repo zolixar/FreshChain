@@ -10,11 +10,11 @@ Thumbs.db
 *~
 
 # Old vanilla JS app (migrated to freshchain-react/)
-app.js
-index.html
-customer.html
-style.css
-404.html
+/app.js
+/index.html
+/customer.html
+/style.css
+/404.html
 
 # Dependencies (in case someone runs npm install in root)
 node_modules/
