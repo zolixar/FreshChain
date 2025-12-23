@@ -99,17 +99,23 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         // Use MetaMask provider without requesting accounts
         web3Provider = new ethers.providers.Web3Provider(window.ethereum);
       } else {
-        // Prioritize environment variable for RPC URL (Production/Deployed)
+        // Prioritize environment variable for RPC URL
         const envRpcUrl = import.meta.env.VITE_RPC_URL;
         
         if (envRpcUrl) {
            web3Provider = new ethers.providers.JsonRpcProvider(envRpcUrl);
         } else {
-           // Fallback for local development
-           const rpcUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? "http://127.0.0.1:8545"
-            : `http://${window.location.hostname}:8545`;
-           web3Provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+           // If no env var, check if we are on localhost
+           const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+           
+           if (isLocalhost) {
+             web3Provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+           } else {
+             // If deployed (not localhost) and no env var, default to Sepolia public RPC
+             // This handles the case where .env is not pushed to production
+             console.log("Connecting to Sepolia public RPC");
+             web3Provider = new ethers.providers.JsonRpcProvider("https://rpc.sepolia.org");
+           }
         }
       }
       
