@@ -13,8 +13,8 @@ import {
   Plus,
   Send,
   CheckCircle,
-  Copy,
-  Share2
+  Share2,
+  Download
 } from 'lucide-react';
 import { ethers } from 'ethers';
 import { useWeb3 } from '../../contexts/Web3Context';
@@ -55,14 +55,19 @@ function ActiveBatchesList({ contract, userAddress }: { contract: ethers.Contrac
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // Could add a toast here
+  const copyToClipboard = async (batchId: number) => {
+    const url = `https://zolixar.github.io/FreshChain/#/batch/${batchId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      // Could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   const downloadQRCode = async (batchId: number) => {
     try {
-      const url = `https://zolixar.github.io/FreshChain/batch/${batchId}`;
+      const url = `https://zolixar.github.io/FreshChain/#/batch/${batchId}`;
       const dataUrl = await QRCode.toDataURL(url, { 
         width: 200, 
         margin: 2,
@@ -123,10 +128,10 @@ function ActiveBatchesList({ contract, userAddress }: { contract: ethers.Contrac
                               variant="ghost" 
                               size="sm" 
                               className="h-8 w-8 p-0"
-                              onClick={() => copyToClipboard(batch.id.toString())}
-                              title="Copy Batch ID"
+                              onClick={() => copyToClipboard(batch.id)}
+                              title="Share link"
                             >
-                              <Copy className="h-4 w-4" />
+                              <Share2 className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="ghost" 
@@ -135,7 +140,7 @@ function ActiveBatchesList({ contract, userAddress }: { contract: ethers.Contrac
                               onClick={() => downloadQRCode(batch.id)}
                               title="Download QR Code"
                             >
-                              <Share2 className="h-4 w-4" />
+                              <Download className="h-4 w-4" />
                             </Button>
                           </div>
                       </div>

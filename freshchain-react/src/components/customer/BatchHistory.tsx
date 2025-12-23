@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { MapPin, Thermometer, Droplets, User, CheckCircle, Factory, Truck, ArrowRight, ArrowLeft, Share2 } from 'lucide-react';
+import { MapPin, Thermometer, Droplets, User, CheckCircle, Factory, Truck, ArrowRight, ArrowLeft, Share2, Download } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useWeb3 } from '../../contexts/Web3Context';
 import type { Batch, SensorData } from '../../types';
@@ -70,6 +70,16 @@ export default function BatchHistory() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const copyToClipboard = async () => {
+    const url = `https://zolixar.github.io/FreshChain/#/batch/${batchId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      // Could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   const loadBatchDetails = async () => {
@@ -300,20 +310,25 @@ export default function BatchHistory() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+             <Button 
+               variant="ghost" 
+               size="sm" 
+               onClick={copyToClipboard} 
+               className={`text-xs h-8 gap-1 border-none ${batch.arrived ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-black/5 hover:bg-black/10 text-secondary-foreground'}`}
+               title="Copy link to clipboard"
+             >
+               <Share2 className="h-3 w-3" /> Share
+             </Button>
              <Button 
                variant="ghost" 
                size="sm" 
                onClick={downloadQRCode} 
                className={`text-xs h-8 gap-1 border-none ${batch.arrived ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-black/5 hover:bg-black/10 text-secondary-foreground'}`}
+               title="Download QR code"
              >
-               <Share2 className="h-3 w-3" /> Share
+               <Download className="h-3 w-3" /> QR
              </Button>
-             {qrCodeUrl && (
-               <div className="bg-white p-1 rounded shadow-sm">
-                 <img src={qrCodeUrl} alt="Batch QR Code" className="w-12 h-12" />
-               </div>
-             )}
           </div>
         </div>
 
