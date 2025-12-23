@@ -46,7 +46,8 @@ export default function BatchHistory() {
 
   const generateQRCode = async () => {
     try {
-      const url = `https://zolixar.github.io/FreshChain/batch/${batchId}`;
+      // Use HashRouter format for GitHub Pages compatibility
+      const url = `https://zolixar.github.io/FreshChain/#/batch/${batchId}`;
       const dataUrl = await QRCode.toDataURL(url, { 
         width: 200, 
         margin: 2,

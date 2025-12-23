@@ -29,7 +29,14 @@ export default function ProductGallery() {
       setLoading(true);
       setError(null);
       
-      const batchCount = await contract.batchCounter();
+      // Add a timeout to the contract call to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timed out. Check your internet connection or RPC URL.')), 15000)
+      );
+
+      const batchCountPromise = contract.batchCounter();
+      const batchCount = await Promise.race([batchCountPromise, timeoutPromise]) as any;
+      
       const totalBatches = batchCount.toNumber();
       
       const batchPromises = [];
