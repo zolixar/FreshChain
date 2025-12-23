@@ -99,8 +99,18 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         // Use MetaMask provider without requesting accounts
         web3Provider = new ethers.providers.Web3Provider(window.ethereum);
       } else {
-        // Fallback to localhost
-        web3Provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+        // Prioritize environment variable for RPC URL (Production/Deployed)
+        const envRpcUrl = import.meta.env.VITE_RPC_URL;
+        
+        if (envRpcUrl) {
+           web3Provider = new ethers.providers.JsonRpcProvider(envRpcUrl);
+        } else {
+           // Fallback for local development
+           const rpcUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? "http://127.0.0.1:8545"
+            : `http://${window.location.hostname}:8545`;
+           web3Provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+        }
       }
       
       const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, web3Provider);
