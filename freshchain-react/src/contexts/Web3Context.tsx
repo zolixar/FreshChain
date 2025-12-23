@@ -93,42 +93,98 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   }, [checkRoles]);
 
   const connectGuest = useCallback(async () => {
+    console.log("=== GUEST CONNECTION DEBUG START ===");
+    console.log("Timestamp:", new Date().toISOString());
+    console.log("Environment VITE_RPC_URL:", import.meta.env.VITE_RPC_URL);
+    console.log("Current hostname:", window.location.hostname);
+    
     try {
-      let web3Provider;
-      if (typeof window.ethereum !== 'undefined') {
-        // Use MetaMask provider without requesting accounts
-        web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      console.log("Step 1: Connecting as guest...");
+      
+      // Use environment variable or try multiple CORS-friendly Sepolia RPCs
+      const defaultRpcs = [
+        "https://eth-sepolia.g.alchemy.com/v2/demo",
+        "https://ethereum-sepolia.publicnode.com",
+        "https://rpc2.sepolia.org",
+        "https://sepolia.gateway.tenderly.co"
+      ];
+      
+      console.log("Step 2: Default RPCs list:", defaultRpcs);
+      
+      let web3Provider: ethers.providers.JsonRpcProvider | null = null;
+      
+      // If environment RPC is set, try it first
+      if (import.meta.env.VITE_RPC_URL) {
+        try {
+          console.log("Step 3a: Trying environment RPC URL:", import.meta.env.VITE_RPC_URL);
+          const tempProvider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_RPC_URL);
+          console.log("Step 3b: Provider created, testing connection...");
+          const blockNumber = await tempProvider.getBlockNumber();
+          console.log("Step 3c: Connection successful! Block number:", blockNumber);
+          web3Provider = tempProvider;
+          console.log("Step 3d: Using environment RPC");
+        } catch (e) {
+          console.error("Step 3e: Environment RPC failed:", e);
+          console.error("Error details:", {
+            name: e instanceof Error ? e.name : 'Unknown',
+            message: e instanceof Error ? e.message : String(e),
+            stack: e instanceof Error ? e.stack : undefined
+          });
+        }
       } else {
-        // Prioritize environment variable for RPC URL
-        const envRpcUrl = import.meta.env.VITE_RPC_URL;
-        
-        if (envRpcUrl) {
-           web3Provider = new ethers.providers.JsonRpcProvider(envRpcUrl);
-        } else {
-           // If no env var, check if we are on localhost
-           const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-           
-           if (isLocalhost) {
-             web3Provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
-           } else {
-             // If deployed (not localhost) and no env var, default to Sepolia public RPC
-             // This handles the case where .env is not pushed to production
-             console.log("Connecting to Sepolia public RPC");
-             web3Provider = new ethers.providers.JsonRpcProvider("https://rpc.sepolia.org");
-           }
+        console.log("Step 3: No environment RPC set, will try defaults");
+      }
+      
+      // If env RPC failed or not set, try the default RPCs
+      if (!web3Provider) {
+        console.log("Step 4: Trying default RPCs...");
+        for (let i = 0; i < defaultRpcs.length; i++) {
+          const rpcUrl = defaultRpcs[i];
+          try {
+            console.log(`Step 4.${i + 1}a: Attempting RPC ${i + 1}/${defaultRpcs.length}: ${rpcUrl}`);
+            const tempProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+            console.log(`Step 4.${i + 1}b: Provider created, testing with 3s timeout...`);
+            
+            // Quick connectivity test with timeout
+            const blockNumber = await Promise.race([
+              tempProvider.getBlockNumber(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('3 second timeout exceeded')), 3000))
+            ]) as number;
+            
+            console.log(`Step 4.${i + 1}c: SUCCESS! Block number:`, blockNumber);
+            web3Provider = tempProvider;
+            console.log(`Step 4.${i + 1}d: Using RPC: ${rpcUrl}`);
+            break;
+          } catch (e) {
+            console.warn(`Step 4.${i + 1}e: RPC failed: ${rpcUrl}`);
+            console.warn("Error:", {
+              name: e instanceof Error ? e.name : 'Unknown',
+              message: e instanceof Error ? e.message : String(e)
+            });
+          }
         }
       }
       
+      if (!web3Provider) {
+        console.error("Step 5: FATAL - No RPC provider could be established");
+        throw new Error("Unable to connect to Sepolia network. Please check your internet connection and try again.");
+      }
+      
+      console.log("Step 6: Creating contract instance...");
+      console.log("Contract Address:", CONTRACT_ADDRESS);
+      console.log("Contract ABI length:", CONTRACT_ABI.length);
+      
       const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, web3Provider);
+      console.log("Step 7: Contract instance created successfully");
 
+      console.log("Step 8: Setting state...");
       setProvider(web3Provider);
-      setSigner(null); // No signer for guests
+      setSigner(null);
       setContract(contractInstance);
       setAccount(null);
       setIsConnected(true);
       setIsGuest(true);
       
-      // No roles for guests
       setUserRoles({
         isOwner: false,
         isProducer: false,
@@ -136,8 +192,18 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         isDistributor: false,
         isRetailer: false,
       });
+      
+      console.log("Step 9: State updated successfully");
+      console.log("=== GUEST CONNECTION SUCCESS ===");
     } catch (error) {
-      console.error('Error connecting as guest:', error);
+      console.error("=== GUEST CONNECTION FAILED ===");
+      console.error("Error caught in connectGuest:", error);
+      console.error("Error type:", typeof error);
+      console.error("Error details:", {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       throw error;
     }
   }, []);

@@ -132,9 +132,13 @@ export default function BatchHistory() {
     };
 
     try {
+      // Get current block number to limit query range
+      const currentBlock = await contract.provider.getBlockNumber();
+      const fromBlock = Math.max(0, currentBlock - 50000); // Query last 50k blocks max
+      
       // Get creation event
       const createFilter = contract.filters.BatchCreated();
-      const allCreateEvents = await contract.queryFilter(createFilter);
+      const allCreateEvents = await contract.queryFilter(createFilter, fromBlock, 'latest');
       const createEvents = allCreateEvents.filter((e: any) => e.args?.batchId.toString() === batchId?.toString());
       
       if (createEvents.length > 0) {
@@ -153,7 +157,7 @@ export default function BatchHistory() {
 
       // Get ownership transfer events
       const transferFilter = contract.filters.OwnershipTransferred();
-      const allTransferEvents = await contract.queryFilter(transferFilter);
+      const allTransferEvents = await contract.queryFilter(transferFilter, fromBlock, 'latest');
       const transferEvents = allTransferEvents.filter((e: any) => e.args?.batchId.toString() === batchId?.toString());
 
       for (const event of transferEvents) {
@@ -201,7 +205,7 @@ export default function BatchHistory() {
       // Get arrival event
       if (batchInfo.arrived) {
         const arriveFilter = contract.filters.BatchArrived();
-        const allArriveEvents = await contract.queryFilter(arriveFilter);
+        const allArriveEvents = await contract.queryFilter(arriveFilter, fromBlock, 'latest');
         const arriveEvents = allArriveEvents.filter((e: any) => e.args?.batchId.toString() === batchId?.toString());
 
         if (arriveEvents.length > 0) {

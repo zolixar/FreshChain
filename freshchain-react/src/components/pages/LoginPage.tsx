@@ -1,16 +1,34 @@
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Leaf, Wallet, Sun, Sprout, Tractor, Wheat } from 'lucide-react';
+import { Leaf, Wallet, Sun, Sprout, Tractor, Wheat, Loader2 } from 'lucide-react';
 import { useWeb3 } from '../../contexts/Web3Context';
 
 export function LoginPage() {
   const { connect, connectGuest } = useWeb3();
+  const [isWalletLoading, setIsWalletLoading] = useState(false);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
   
   const handleConnect = async () => {
     try {
+      setIsWalletLoading(true);
       await connect();
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Failed to connect');
+    } finally {
+      setIsWalletLoading(false);
+    }
+  };
+
+  const handleGuestConnect = async () => {
+    try {
+      setIsGuestLoading(true);
+      await connectGuest();
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : 'Failed to connect as guest. Please try again.');
+    } finally {
+      setIsGuestLoading(false);
     }
   };
   return (
@@ -87,9 +105,10 @@ export function LoginPage() {
                 <Button 
                   onClick={handleConnect} 
                   size="lg" 
+                  disabled={isWalletLoading || isGuestLoading}
                   className="w-full h-14 text-base font-semibold shadow-lg transition-all"
                 >
-                  <Wallet className="mr-3 h-5 w-5" />
+                  {isWalletLoading ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <Wallet className="mr-3 h-5 w-5" />}
                   Connect with MetaMask
                 </Button>
                 
@@ -106,12 +125,13 @@ export function LoginPage() {
 
                 <Button 
                   variant="outline" 
-                  onClick={connectGuest}
+                  onClick={handleGuestConnect}
                   size="lg"
+                  disabled={isWalletLoading || isGuestLoading}
                   className="w-full h-14 text-base border-2 border-primary text-primary hover:bg-primary/5 font-semibold transition-all hover:scale-[1.02]"
                 >
-                  <Sprout className="mr-3 h-5 w-5" />
-                  Enter as Customer
+                  {isGuestLoading ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <Sprout className="mr-3 h-5 w-5" />}
+                  Enter as a customer
                 </Button>
               </div>
 
