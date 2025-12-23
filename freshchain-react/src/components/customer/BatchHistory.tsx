@@ -289,73 +289,77 @@ export default function BatchHistory() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="max-w-5xl mx-auto px-4 md:px-6 space-y-6 animate-in fade-in duration-500">
       {/* Main Content */}
       <div className="space-y-6">
         {/* Status Banner */}
-        <div className={`rounded-t-lg p-4 text-white flex items-center justify-between ${batch.arrived ? 'bg-primary' : 'bg-secondary text-secondary-foreground'}`}>
-          <div className="flex items-center gap-3">
-            {batch.arrived ? (
-              <CheckCircle className="h-6 w-6" />
-            ) : (
-              <Truck className="h-6 w-6" />
-            )}
-            <div>
-              <h2 className="text-xl font-bold uppercase">
-                {batch.arrived ? 'DELIVERED' : 'IN TRANSIT'}
-              </h2>
-              <p className="text-sm opacity-90">
-                Batch ID: {batch.batchId} | {batch.arrived ? `Delivered as on ${formatDate(timeline.find(e => e.type === 'arrived')?.timestamp || Date.now() / 1000)}` : 'Currently in transit'}
-              </p>
+        <div className={`rounded-lg p-4 md:p-5 text-white ${batch.arrived ? 'bg-primary' : 'bg-secondary text-secondary-foreground'}`}>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start gap-2 md:gap-3 flex-1 min-w-0">
+              {batch.arrived ? (
+                <CheckCircle className="h-5 w-5 md:h-6 md:w-6 shrink-0" />
+              ) : (
+                <Truck className="h-5 w-5 md:h-6 md:w-6 shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg md:text-xl font-bold uppercase">
+                  {batch.arrived ? 'DELIVERED' : 'IN TRANSIT'}
+                </h2>
+                <p className="text-xs md:text-sm opacity-90 break-words mt-1">
+                  Batch ID: {batch.batchId}
+                  <span className="hidden md:inline"> | </span>
+                  <span className="block md:inline mt-1 md:mt-0">{batch.arrived ? `Delivered as on ${formatDate(timeline.find(e => e.type === 'arrived')?.timestamp || Date.now() / 1000)}` : 'Currently in transit'}</span>
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-             <Button 
-               variant="ghost" 
-               size="sm" 
-               onClick={copyToClipboard} 
-               className={`text-xs h-8 gap-1 border-none ${batch.arrived ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-black/5 hover:bg-black/10 text-secondary-foreground'}`}
-               title="Copy link to clipboard"
-             >
-               <Share2 className="h-3 w-3" /> Share
-             </Button>
-             <Button 
-               variant="ghost" 
-               size="sm" 
-               onClick={downloadQRCode} 
-               className={`text-xs h-8 gap-1 border-none ${batch.arrived ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-black/5 hover:bg-black/10 text-secondary-foreground'}`}
-               title="Download QR code"
-             >
-               <Download className="h-3 w-3" /> QR
-             </Button>
+            <div className="flex items-center gap-1.5 shrink-0">
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 onClick={copyToClipboard} 
+                 className={`text-xs h-8 px-2 md:px-3 gap-1 border-none ${batch.arrived ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-black/5 hover:bg-black/10'}`}
+                 title="Copy link to clipboard"
+               >
+                 <Share2 className="h-3 w-3" /> <span className="hidden sm:inline">Share</span>
+               </Button>
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 onClick={downloadQRCode} 
+                 className={`text-xs h-8 px-2 md:px-3 gap-1 border-none ${batch.arrived ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-black/5 hover:bg-black/10'}`}
+                 title="Download QR code"
+               >
+                 <Download className="h-3 w-3" /> <span className="hidden sm:inline">QR</span>
+               </Button>
+            </div>
           </div>
         </div>
 
         {/* Product Details */}
-        <Card className="rounded-t-none border-t-0 -mt-6">
+        <Card className="rounded-lg">
           <CardHeader>
             <CardTitle className="text-lg">Product Details</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-6 justify-between items-start">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1 w-full">
+          <CardContent className="pt-4">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-between items-start">
+              <div className="grid grid-cols-2 gap-4 md:gap-6 flex-1 w-full">
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold uppercase">Product</p>
-                  <p className="font-bold text-lg">{batch.productName}</p>
+                  <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Product</p>
+                  <p className="font-bold text-base md:text-lg">{batch.productName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold uppercase">Quantity</p>
-                  <p className="font-bold text-lg">{batch.quantity} kg</p>
+                  <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Quantity</p>
+                  <p className="font-bold text-base md:text-lg">{batch.quantity} kg</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold uppercase">Producer</p>
+                  <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Producer</p>
                   <p className="font-bold text-sm truncate" title={batch.producer}>
                     {batch.producer.slice(0, 6)}...{batch.producer.slice(-4)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-semibold uppercase">Current Holder</p>
+                  <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Current Holder</p>
                   <div className="flex flex-col">
                     <span className="font-bold text-sm flex items-center gap-1">
                       <User className="h-3 w-3" />
@@ -373,68 +377,70 @@ export default function BatchHistory() {
         </Card>
 
         {/* Tracking History */}
-        <Card>
+        <Card className="rounded-lg">
           <CardHeader>
             <CardTitle>Tracking History</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="relative space-y-0 ml-2">
+          <CardContent className="pt-4">
+            <div className="relative space-y-0 ml-1 md:ml-2">
               {/* Vertical Line */}
               <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-border" />
 
               {timeline.map((event, index) => (
-                <div key={index} className="relative flex gap-6 pb-8 last:pb-0 group">
+                <div key={index} className="relative flex gap-3 md:gap-6 pb-6 md:pb-8 last:pb-0 group">
                   {/* Dot */}
-                  <div className={`relative z-10 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 border-white ring-2 ${index === 0 ? 'bg-primary ring-primary' : 'bg-primary ring-primary'}`} />
+                  <div className="relative z-10 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 border-white bg-primary ring-2 ring-primary/20" />
                   
                   {/* Content */}
-                  <div className="flex-1 bg-muted/30 rounded-lg p-4 -mt-2">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className={`font-bold text-base flex items-center gap-2 ${event.color}`}>
-                          {event.icon && <event.icon className="h-4 w-4" />}
-                          {event.title}
+                  <div className="flex-1 bg-muted/30 rounded-lg p-3 md:p-4 -mt-2">
+                    <div className="flex items-start justify-between gap-2 md:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-bold text-sm md:text-base flex items-center gap-2 ${event.color}`}>
+                          {event.icon && <event.icon className="h-4 w-4 shrink-0" />}
+                          <span className="truncate">{event.title}</span>
                         </h3>
                         
                         {/* Location/Subtitle */}
-                        <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                          <MapPin className="h-3 w-3 shrink-0" />
+                          <span className="truncate">
                           {event.type === 'created' ? 'Origin' : 
                            event.type === 'arrived' ? 'Final Destination' :
                            event.type === 'sensor' && 'location' in event.data ? event.data.location :
                            'Processing Center'}
+                          </span>
                         </p>
 
                         {/* Extra Details */}
-                        <div className="mt-2 text-sm">
+                        <div className="mt-2 text-xs md:text-sm">
                           {event.type === 'sensor' && 'temperature' in event.data && (
-                            <div className="flex gap-4">
-                              <span className="flex items-center gap-1">
-                                <Thermometer className="h-3 w-3 text-destructive" />
+                            <div className="flex flex-wrap gap-3 md:gap-4">
+                              <span className="flex items-center gap-1 whitespace-nowrap">
+                                <Thermometer className="h-3 w-3 text-destructive shrink-0" />
                                 Temp: <b>{event.data.temperature}°C</b>
                               </span>
-                              <span className="flex items-center gap-1">
-                                <Droplets className="h-3 w-3 text-blue-500" />
+                              <span className="flex items-center gap-1 whitespace-nowrap">
+                                <Droplets className="h-3 w-3 text-blue-500 shrink-0" />
                                 Humidity: <b>{event.data.humidity}%</b>
                               </span>
                             </div>
                           )}
                           
                           {event.type === 'created' && 'producer' in event.data && (
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <Factory className="h-3 w-3" />
-                              Producer
-                              <span className="font-mono text-xs ml-1">
+                            <div className="flex items-center gap-1 text-muted-foreground flex-wrap">
+                              <Factory className="h-3 w-3 shrink-0" />
+                              <span>Producer</span>
+                              <span className="font-mono text-xs break-all">
                                 {event.data.producer?.slice(0, 10)}...
                               </span>
                             </div>
                           )}
 
                           {event.type === 'transfer' && 'role' in event.data && 'to' in event.data && (
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <User className="h-3 w-3" />
-                              {event.data.role}
-                              <span className="font-mono text-xs ml-1">
+                            <div className="flex items-center gap-1 text-muted-foreground flex-wrap">
+                              <User className="h-3 w-3 shrink-0" />
+                              <span>{event.data.role}</span>
+                              <span className="font-mono text-xs break-all">
                                 {event.data.to?.slice(0, 10)}...
                               </span>
                             </div>
@@ -450,10 +456,10 @@ export default function BatchHistory() {
 
                       {/* Timestamp */}
                       <div className="text-right shrink-0">
-                        <div className="text-xs text-muted-foreground font-medium">
+                        <div className="text-[11px] md:text-xs text-muted-foreground font-medium whitespace-nowrap">
                           {formatDate(event.timestamp)}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-[10px] md:text-xs text-muted-foreground whitespace-nowrap">
                           {formatTime(event.timestamp)}
                         </div>
                       </div>
