@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Package } from 'lucide-react';
+import { BigNumber } from 'ethers';
 import { useWeb3 } from '../../contexts/Web3Context';
 import type { Batch } from '../../types';
 
@@ -35,7 +36,7 @@ export default function ProductGallery() {
       );
 
       const batchCountPromise = contract.batchCounter();
-      const batchCount = await Promise.race([batchCountPromise, timeoutPromise]) as any;
+      const batchCount = await Promise.race([batchCountPromise, timeoutPromise]) as BigNumber;
       
       const totalBatches = batchCount.toNumber();
       
@@ -161,7 +162,7 @@ export default function ProductGallery() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Quantity:</span>
-                <span className="font-semibold">{batch.quantity} units</span>
+                <span className="font-semibold">{batch.quantity} Kg</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Producer:</span>
